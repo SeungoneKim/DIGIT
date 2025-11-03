@@ -1,0 +1,43 @@
+# Docker Compose configuration for running OpenHands with paper reviewer
+version: '3.8'
+
+services:
+  openhands-api:
+    image: ghcr.io/all-hands-ai/openhands:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - WORKSPACE_BASE=/workspace
+      - LOG_LEVEL=INFO
+      - MAX_ITERATIONS=100
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./workspace:/workspace
+      - ./config_example.yaml:/app/config.yaml
+      - ./logs:/app/logs
+    command: ["python", "-m", "openhands.server.listen", "--config", "/app/config.yaml"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  paper-reviewer:
+    build:
+      context: .
+      dockerfile: Dockerfile.reviewer
+    depends_on:
+      openhands-api:
+        condition: service_healthy
+    volumes:
+      - ./papers:/app/papers
+      - ./review_outputs:/app/review_outputs
+    environment:
+      - OPENHANDS_API_URL=http://openhands-api:3000
+    profiles:
+      - review  # Use with: docker-compose --profile review up
+
+volumes:
+  workspace:
+  logs:
