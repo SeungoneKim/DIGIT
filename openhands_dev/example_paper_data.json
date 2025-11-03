@@ -1,0 +1,49 @@
+{
+  "title": "A Bayesian approach towards atomically-precise localization in fluorescence microscopy",
+  "pre_title": "Atomic Localization Fluorescent Microscopy",
+  "journal": "Nature Communications",
+  "published": "21 October 2025",
+  "supplementary_0": [
+    {
+      "label": "Supplementary Information",
+      "link": "https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-025-64083-w/MediaObjects/41467_2025_64083_MOESM1_ESM.pdf"
+    },
+    {
+      "label": "Peer Review File",
+      "link": "https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-025-64083-w/MediaObjects/41467_2025_64083_MOESM2_ESM.pdf"
+    }
+  ],
+  "supplementary_1": null,
+  "source_data": [
+    "https://www.nature.com/articles/s41467-025-64083-w#MOESM1",
+    "https://doi.org/10.6084/m9.figshare.28281212"
+  ],
+  "code": [
+    "https://github.com/sophiaOnPoint/DIGIT",
+    "https://www.nature.com/articles/s41467-025-64083-w#ref-CR65"
+  ],
+  "subject": [
+    "Imaging techniques",
+    "Single photons and quantum effects",
+    "Super-resolution microscopy"
+  ],
+  "license": "http://creativecommons.org/licenses/by-nc-nd/4.0/",
+  "preprint_pdf": "https://www.researchsquare.com/article/rs-5744812/v1.pdf?c=1761131278000",
+  "research_square_link": "https://www.researchsquare.com//article/rs-5744812/v1",
+  "nature_pdf": "https://www.nature.com/articles/s41467-025-64083-w.pdf",
+  "preprint_posted": "15 Jul, 2025",
+  "research_square_content": [
+    {
+      "section_name": "Abstract",
+      "section_text": "Super-resolution microscopy has revolutionized the imaging of complex physical and biological systems by surpassing the Abbe diffraction limit. Recent advancements, particular in single-molecular localization microscopy (SMLM), have pushed localization below nanometer precision [1–5], by applying prior knowledge of correlated fluorescence emission from single emitters [6]. However, averaging down from 1 nm to 1 Ångström requires a hundred-fold increase in collected photon signal [6–8]; this quadratic resource scaling represents a limitation bottleneck in SMLM due to photo-bleaching, extremely long integration times, and other practical constraints [9]. Here, we introduce a super-resolution method that breaks with the this scaling by applying another prior: the structure of the underlying atomic lattice. Specifically, applying this discrete grid imaging technique (DIGIT) in experiments on color centers in a diamond sample, we observe that the localization uncertainty reduces exponentially soon after localization falls below the host crystal's atomic lattice constant. We demonstrate DIGIT under wide-field illumination for large-scale localization and spectroscopy of quantum emitters. By quantitatively linking the atomistic model of optical transitions in a sample with wide-field imaging readout, DIGIT presents a new tool for applications ranging from the identification of solid-state quantum memories in crystals to, potentially, the direct observation of optical transitions in the electronic structure of molecules.Physical sciences/Optics and photonics/Optical techniques/Imaging and sensingPhysical sciences/Optics and photonics/Optical physicsPhysical sciences/Nanoscience and technology/Techniques and instrumentation/Imaging techniques",
+      "section_image": []
+    }
+  ],
+  "nature_content": [
+    {
+      "section_name": "Abstract",
+      "section_text": "Super-resolution microscopy has revolutionized the imaging of complex physical and biological systems by surpassing the Abbe diffraction limit. Recent advancements, particularly in single-molecule localization microscopy, have pushed localization below nanometer precision, by applying prior knowledge of correlated fluorescence emission from single emitters. However, achieving a refinement from 1 nm to 1 Ångström demands a hundred-fold increase in collected photon signal. This quadratic resource scaling imposes a fundamental barrier in single-molecule localization microscopy, where the intense photon collection is challenged by photo-bleaching, prolonged integration times, and inherent practical constraints. Here, we break this limit by harnessing the periodic nature of the atomic lattice structure. Applying this discrete grid imaging technique (DIGIT) in a quantum emitter system, we observe an exponential collapse of localization uncertainty once surpassing the host crystal's atomic lattice constant. We further applied DIGIT to a large-scale quantum emitter array, enabling parallel positioning of each emitter through wide-field imaging. Collectively, these advancements establish DIGIT as a competitive tool for achieving unprecedented, precise measurements, ultimately paving the way to direct optical resolution of crystal and atomic features within quantum and biological systems.",
+      "section_image": []
+    }
+  ]
+}

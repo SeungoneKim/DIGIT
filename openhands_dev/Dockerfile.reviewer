@@ -1,0 +1,32 @@
+# Dockerfile for the paper reviewer service
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY paper_reviewer.py .
+COPY example_paper_data.json .
+
+# Create directories for inputs and outputs
+RUN mkdir -p /app/papers /app/review_outputs
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV OPENHANDS_API_URL=http://localhost:3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import aiohttp; import asyncio; asyncio.run(aiohttp.ClientSession().get('${OPENHANDS_API_URL}/api/health').close())" || exit 1
+
+# Default command
+CMD ["python", "paper_reviewer.py", "--paper-file", "/app/papers/paper_data.json", "--output-dir", "/app/review_outputs"]

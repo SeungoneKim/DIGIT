@@ -1,0 +1,49 @@
+# Example OpenHands configuration for paper review tasks
+# Save this as config.yaml in your OpenHands installation directory
+
+# API Configuration
+api:
+  port: 3000
+  host: "0.0.0.0"
+  cors_enabled: true
+  max_request_size: "100MB"  # For large paper files
+  timeout: 3600  # 1 hour timeout for complex reviews
+
+# Agent Configuration
+agent:
+  name: "CodeActAgent"
+  model: "anthropic/claude-3-5-sonnet-20241022"
+  max_iterations: 100
+  max_chars: 1000000  # Increased for detailed reviews
+  
+# Workspace Configuration  
+workspace:
+  mount_workspace_in_sandbox: true
+  workspace_base: "/workspace"
+  enable_auto_lint: false  # Disable for research code analysis
+  
+# Security Configuration
+security:
+  enable_auto_fix: false  # Don't auto-fix research code
+  allow_downloads: true   # Allow downloading papers and data
+  allow_network_access: true  # For accessing repositories and papers
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  file: "openhands_paper_review.log"
+  
+# Resource Limits
+resources:
+  max_memory: "8GB"
+  max_cpu_time: 7200  # 2 hours max CPU time
+  max_file_size: "1GB"
+
+# Paper Review Specific Settings
+paper_review:
+  max_critical_items: 10
+  require_evidence: true
+  require_citations: true
+  enable_code_analysis: true
+  enable_figure_analysis: true
+  enable_reproducibility_testing: true
