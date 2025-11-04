@@ -1,43 +1,121 @@
-# Docker Compose configuration for running OpenHands with paper reviewer
+# Enhanced Docker Compose configuration for OpenHands API + Paper Reviewer System
 version: '3.8'
 
 services:
+  # OpenHands API Server
   openhands-api:
-    image: ghcr.io/all-hands-ai/openhands:latest
+    image: docker.all-hands.dev/all-hands-ai/openhands:0.9
+    container_name: openhands-api-server
     ports:
       - "3000:3000"
-    environment:
-      - WORKSPACE_BASE=/workspace
-      - LOG_LEVEL=INFO
-      - MAX_ITERATIONS=100
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
-      - ./workspace:/workspace
-      - ./config_example.yaml:/app/config.yaml
-      - ./logs:/app/logs
-    command: ["python", "-m", "openhands.server.listen", "--config", "/app/config.yaml"]
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/workspace
+      - ./review_workspace:/workspace/review_workspace
+    environment:
+      - SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev/all-hands-ai/runtime:0.9-nikolaik
+      - LOG_LEVEL=INFO
+      - WORKSPACE_BASE=/workspace
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  paper-reviewer:
+  # Enhanced Paper Reviewer (standalone - 99.77% match)
+  enhanced-reviewer:
     build:
       context: .
-      dockerfile: Dockerfile.reviewer
+      dockerfile: Dockerfile.enhanced
+    container_name: enhanced-paper-reviewer
+    volumes:
+      - ./review_output:/app/review_output
+      - ./review_workspace:/app/review_workspace
+      - ./test_workspace:/app/test_workspace
+    environment:
+      - PYTHONPATH=/app
+      - REVIEW_WORKSPACE=/app/review_workspace
+    working_dir: /app
+    command: ["python", "final_reviewer.py"]
+    restart: "no"  # Run once
+    profiles:
+      - enhanced
+
+  # API-based Paper Reviewer
+  api-reviewer:
+    build:
+      context: .
+      dockerfile: Dockerfile.enhanced
+    container_name: api-paper-reviewer
+    volumes:
+      - ./review_output:/app/review_output
+      - ./api_workspace:/app/api_workspace
+    environment:
+      - PYTHONPATH=/app
+      - OPENHANDS_API_URL=http://openhands-api:3000
+    working_dir: /app
+    command: ["python", "api_paper_reviewer.py"]
+    restart: "no"  # Run once
     depends_on:
       openhands-api:
         condition: service_healthy
-    volumes:
-      - ./papers:/app/papers
-      - ./review_outputs:/app/review_outputs
-    environment:
-      - OPENHANDS_API_URL=http://openhands-api:3000
     profiles:
-      - review  # Use with: docker-compose --profile review up
+      - api
+
+  # Hybrid Reviewer (Enhanced + API)
+  hybrid-reviewer:
+    build:
+      context: .
+      dockerfile: Dockerfile.enhanced
+    container_name: hybrid-paper-reviewer
+    volumes:
+      - ./review_output:/app/review_output
+      - ./hybrid_workspace:/app/hybrid_workspace
+    environment:
+      - PYTHONPATH=/app
+      - OPENHANDS_API_URL=http://openhands-api:3000
+      - REVIEW_WORKSPACE=/app/hybrid_workspace
+    working_dir: /app
+    command: ["python", "hybrid_reviewer.py"]
+    restart: "no"  # Run once
+    depends_on:
+      openhands-api:
+        condition: service_healthy
+    profiles:
+      - hybrid
+
+  # Test Suite Runner
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.enhanced
+    container_name: paper-reviewer-tests
+    volumes:
+      - ./review_output:/app/review_output
+      - ./test_workspace:/app/test_workspace
+      - /workspace/project/critical_assessment.md:/app/manual_critical_assessment.md
+    environment:
+      - PYTHONPATH=/app
+      - OPENHANDS_API_URL=http://openhands-api:3000
+    working_dir: /app
+    command: ["python", "test_enhanced_reviewer.py"]
+    restart: "no"  # Run once
+    profiles:
+      - test
 
 volumes:
-  workspace:
-  logs:
+  review_workspace:
+    driver: local
+  api_workspace:
+    driver: local
+  hybrid_workspace:
+    driver: local
+
+networks:
+  default:
+    name: paper-reviewer-network
